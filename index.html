@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAX Customs 2026 · Калькулятор растаможки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(51, 65, 85, 0.5);
+            --accent: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 16px 0;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 100px;
+            color: var(--success);
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .status-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+        }
+
+        .radio-group.three-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .radio-group.five-cols {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .radio-label {
+            cursor: pointer;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            color: var(--text-muted);
+            transition: var(--transition);
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--card-border);
+        }
+
+        .radio-label:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .radio-label input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label:has(input[type="radio"]:checked) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .field {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: var(--transition);
+            -webkit-appearance: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        select.input-field {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236366f1' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        select.input-field option {
+            background-color: #1e293b;
+            color: white;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .checkbox-group:hover {
+            border-color: var(--accent);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin: 0;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .checkbox-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            padding-left: 28px;
+            line-height: 1.4;
+        }
+
+        .checkbox-hint.valid {
+            color: var(--success);
+        }
+
+        .checkbox-hint.invalid {
+            color: var(--warning);
+        }
+
+        .bank-commission-row {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .bank-commission-row.show {
+            display: grid;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+            font-size: 12px;
+            color: #fbbf24;
+            line-height: 1.5;
+        }
+
+        .warning-box strong {
+            color: #fbbf24;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 8px;
+            box-shadow: 0 10px 20px -5px var(--accent-glow);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 24px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            display: none;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .result-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: white;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .result-total {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1.5px solid var(--accent);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .result-total .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .result-total .value {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.05em;
+        }
+
+        .contact-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 20px;
+            transition: var(--transition);
+        }
+
+        .contact-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px var(--accent-glow);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--card-border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 400px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            .radio-group.five-cols {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .radio-group.three-cols {
+                grid-template-columns: 1fr;
+            }
+            .result-total .value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MAX Customs · 2026</h1>
+            <p>Мини-калькулятор растаможки · курс CNY → RUB</p>
+        </div>
+        
+        <div class="card">
+            <div class="status-badge">
+                <span class="dot"></span>
+                Ставки 2026 актуальны
+            </div>
+
+            <form id="calculatorForm">
+                <!-- Тип лица -->
+                <div class="form-group">
+                    <label class="form-label">👤 Тип лица</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="entityType" value="fiz" checked>
+                            <span>Физ лицо</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="entityType" value="yur">
+                            <span>Юр лицо</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Тип двигателя -->
+                <div class="form-group">
+                    <label class="form-label">⚙️ Тип двигателя</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="engineType" value="ice" checked>
+                            <span>ДВС</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="engineType" value="electro">
+                            <span>Электро</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Год ввоза -->
+                <div class="form-group">
+                    <label class="form-label">📅 Год ввоза</label>
+                    <div class="radio-group five-cols">
+                        <label class="radio-label">
+                            <input type="radio" name="importYear" value="2026" checked>
+                            <span>2026</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="importYear" value="2027">
+                            <span>2027</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="importYear" value="2028">
+                            <span>2028</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="importYear" value="2029">
+                            <span>2029</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="importYear" value="2030">
+                            <span>2030</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Стоимость и курсы -->
+                <div class="input-row">
+                    <div class="form-group field">
+                        <label class="form-label">💰 Стоимость, CNY</label>
+                        <input type="number" id="priceCNY" class="input-field" placeholder="100000" min="1" required>
+                    </div>
+                    <div class="form-group field">
+                        <label class="form-label">💱 Курс CNY→RUB</label>
+                        <input type="number" id="rateCNY" class="input-field" value="11.09" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="input-row">
+                    <div class="form-group field">
+                        <label class="form-label">🎂 Возраст авто</label>
+                        <select id="age" class="input-field" required>
+                            <option value="new">Менее 3 лет</option>
+                            <option value="3-5">3-5 лет</option>
+                            <option value="5+">Более 5 лет</option>
+                        </select>
+                    </div>
+                    <div class="form-group field">
+                        <label class="form-label">💶 Курс EUR→RUB</label>
+                        <input type="number" id="rateEUR" class="input-field" value="90.28" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="input-row">
+                    <div class="form-group field">
+                        <label class="form-label">🔧 Объём, см³</label>
+                        <input type="number" id="volume" class="input-field" placeholder="2000" min="500" max="6000" required>
+                    </div>
+                    <div class="form-group field">
+                        <label class="form-label">⚡ Мощность, л.с.</label>
+                        <input type="number" id="power" class="input-field" placeholder="150" min="30" max="1000" required>
+                    </div>
+                </div>
+
+                <!-- Комиссия банка -->
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="bankCommission">
+                        <label for="bankCommission">🏦 Комиссия банка</label>
+                    </div>
+                    <div class="input-row bank-commission-row" id="bankCommissionRow">
+                        <div class="form-group field">
+                            <label class="form-label">Комиссия, %</label>
+                            <input type="number" id="bankPercent" class="input-field" placeholder="2.5" step="0.1" min="0" max="10" value="2.5">
+                        </div>
+                        <div class="form-group field">
+                            <label class="form-label">Сумма, ₽</label>
+                            <input type="number" id="bankAmount" class="input-field" placeholder="0" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Льготный утильсбор -->
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="preferentialUtil" checked>
+                        <label for="preferentialUtil">♻️ Льготный утильсбор</label>
+                    </div>
+                    <div class="checkbox-hint valid" id="utilHint">
+                        ✅ Для физлиц: Электро ≤ 80 л.с. или ДВС ≤ 160 л.с. и ≤ 3000 см³
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-calculate">🧮 Рассчитать стоимость</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>Считаем...</div>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ Расчёт ориентировочный</strong> по ставкам 2026 года (ФТС РФ, утильсбор, НДС, акциз). 
+            Итог зависит от курса валют и документов по авто.
+        </div>
+        
+        <div id="result" class="result">
+            <div class="result-title">📊 Результат расчёта</div>
+            <div id="resultContent"></div>
+        </div>
+        
+        <a href="https://t.me/Nulluss125" class="contact-btn" target="_blank">
+            📞 Связаться с менеджером
+        </a>
+    </div>
+
+    <script>
+        // ==================== ДАННЫЕ ИЗ EXCEL (утильсбор2026.xlsx) ====================
+        
+        const UTILIZATION_DATA = {
+            electro: {
+                new: [
+                    { maxKw: 58.84, rates: [800800, 881000, 969000, 1066000, 1172600] },
+                    { maxKw: 73.55, rates: [991200, 1090400, 1199400, 1319200, 1451200] },
+                    { maxKw: 95.61, rates: [1317600, 1449400, 1594200, 1753800, 1929000] },
+                    { maxKw: 117.68, rates: [1560000, 1716000, 1887600, 2076400, 2284000] },
+                    { maxKw: 139.75, rates: [1848000, 2032800, 2236000, 2459600, 2705600] },
+                    { maxKw: 161.81, rates: [2193600, 2413000, 2654200, 2919600, 3211600] },
+                    { maxKw: 183.88, rates: [2599200, 2859200, 3145000, 3459600, 3805400] },
+                    { maxKw: 205.94, rates: [3079200, 3387200, 3725800, 4098400, 4508200] },
+                    { maxKw: Infinity, rates: [3648000, 4012800, 4414000, 4855400, 5341000] }
+                ],
+                old: [
+                    { maxKw: 58.84, rates: [1408800, 1549600, 1704600, 1875200, 2062600] },
+                    { maxKw: 73.55, rates: [1641600, 1805800, 1986400, 2185000, 2403400] },
+                    { maxKw: 95.61, rates: [1912800, 2104000, 2314400, 2546000, 2800600] },
+                    { maxKw: 117.68, rates: [2227200, 2450000, 2695000, 2964400, 3260800] },
+                    { maxKw: 139.75, rates: [2594400, 2853800, 3139200, 3453200, 3798400] },
+                    { maxKw: 161.81, rates: [3024000, 3326400, 3659000, 4025000, 4427400] },
+                    { maxKw: 183.88, rates: [3523200, 3875600, 4263000, 4689400, 5158400] },
+                    { maxKw: 205.94, rates: [4104000, 4514400, 4965800, 5462400, 6008600] },
+                    { maxKw: Infinity, rates: [4780800, 5258800, 5784800, 6363200, 6999600] }
+                ]
+            },
+            ice: {
+                volume1000: {
+                    new: [
+                        { maxKw: 51.48, rates: [297600, 327400, 360000, 396200, 435800] },
+                        { maxKw: 117.68, rates: [297600, 327400, 360000, 396200, 435800] },
+                        { maxKw: 139.75, rates: [307200, 338000, 371800, 408800, 449800] },
+                        { maxKw: 161.81, rates: [316800, 348400, 383400, 421600, 463800] },
+                        { maxKw: 183.88, rates: [324000, 356400, 392000, 431200, 474400] },
+                        { maxKw: Infinity, rates: [345600, 380200, 418200, 460000, 506000] }
+                    ],
+                    old: [
+                        { maxKw: 51.48, rates: [552000, 607200, 668000, 734800, 808200] },
+                        { maxKw: 117.68, rates: [552000, 607200, 668000, 734800, 808200] },
+                        { maxKw: 139.75, rates: [568600, 625400, 688000, 756800, 832400] },
+                        { maxKw: 161.81, rates: [585600, 644200, 708600, 779400, 857400] },
+                        { maxKw: 183.88, rates: [602400, 662600, 729000, 801800, 882000] },
+                        { maxKw: Infinity, rates: [602400, 662600, 729000, 801800, 882000] }
+                    ]
+                },
+                volume2000: {
+                    new: [
+                        { maxKw: 51.48, rates: [800800, 881000, 969000, 1066000, 1172600] },
+                        { maxKw: 117.68, rates: [800800, 881000, 969000, 1066000, 1172600] },
+                        { maxKw: 139.75, rates: [900000, 990000, 1089000, 1198000, 1317600] },
+                        { maxKw: 161.81, rates: [952800, 1048000, 1152800, 1268200, 1395000] },
+                        { maxKw: 183.88, rates: [1010400, 1111400, 1222600, 1344800, 1479400] },
+                        { maxKw: 205.94, rates: [1142400, 1256600, 1382400, 1520600, 1672600] },
+                        { maxKw: 228.00, rates: [1291200, 1420400, 1562400, 1718600, 1890400] },
+                        { maxKw: 250.07, rates: [1459200, 1605200, 1765600, 1942200, 2136400] },
+                        { maxKw: 272.13, rates: [1663200, 1829600, 2012400, 2213800, 2435000] },
+                        { maxKw: 294.20, rates: [1896000, 2085600, 2294200, 2523600, 2776000] },
+                        { maxKw: 316.26, rates: [2160000, 2376000, 2613600, 2875000, 3162400] },
+                        { maxKw: 338.33, rates: [2464800, 2711200, 2982400, 3280600, 3608800] },
+                        { maxKw: 367.75, rates: [2808000, 3088800, 3397600, 3737400, 4111200] },
+                        { maxKw: Infinity, rates: [3201600, 3521800, 3874000, 4261400, 4687400] }
+                    ],
+                    old: [
+                        { maxKw: 51.48, rates: [1408800, 1549600, 1704600, 1875200, 2062600] },
+                        { maxKw: 117.68, rates: [1408800, 1549600, 1704600, 1875200, 2062600] },
+                        { maxKw: 139.75, rates: [1492800, 1642000, 1806200, 1987000, 2185600] },
+                        { maxKw: 161.81, rates: [1584000, 1742400, 1916600, 2108400, 2319200] },
+                        { maxKw: 183.88, rates: [1677600, 1845400, 2029800, 2232800, 2456200] },
+                        { maxKw: 205.94, rates: [1838400, 2022200, 2224400, 2447000, 2691600] },
+                        { maxKw: 228.00, rates: [2011200, 2212400, 2433600, 2677000, 2944600] },
+                        { maxKw: 250.07, rates: [2203200, 2423600, 2665800, 2932400, 3225800] },
+                        { maxKw: 272.13, rates: [2412000, 2653200, 2918600, 3210400, 3531400] },
+                        { maxKw: 294.20, rates: [2640000, 2904000, 3194400, 3513800, 3865200] },
+                        { maxKw: 316.26, rates: [2892000, 3181200, 3499400, 3849200, 4234200] },
+                        { maxKw: 338.33, rates: [3168000, 3484800, 3833200, 4216600, 4638200] },
+                        { maxKw: 367.75, rates: [3468000, 3814800, 4196200, 4616000, 5077400] },
+                        { maxKw: Infinity, rates: [3796800, 4176400, 4594200, 5053600, 5558800] }
+                    ]
+                },
+                volume3000: {
+                    new: [
+                        { maxKw: 51.48, rates: [2250400, 2475600, 2723000, 2995400, 3295000] },
+                        { maxKw: 117.68, rates: [2250400, 2475600, 2723000, 2995400, 3295000] },
+                        { maxKw: 139.75, rates: [2306800, 2537400, 2791200, 3070200, 3377400] },
+                        { maxKw: 161.81, rates: [2364000, 2600400, 2860400, 3146400, 3461200] },
+                        { maxKw: 183.88, rates: [2402400, 2642600, 2907000, 3197600, 3517400] },
+                        { maxKw: 205.94, rates: [2520000, 2772000, 3049200, 3354200, 3689600] },
+                        { maxKw: 228.00, rates: [2620800, 2882800, 3171200, 3488200, 3837200] },
+                        { maxKw: 250.07, rates: [2726400, 2999000, 3299000, 3628800, 3991800] },
+                        { maxKw: 272.13, rates: [2834400, 3117800, 3429600, 3772600, 4149800] },
+                        { maxKw: 294.20, rates: [2949600, 3244600, 3569000, 3926000, 4318600] },
+                        { maxKw: 316.26, rates: [3067200, 3374000, 3711400, 4082400, 4490600] },
+                        { maxKw: 338.33, rates: [3189600, 3508600, 3859400, 4245400, 4669800] },
+                        { maxKw: 367.75, rates: [3316800, 3648400, 4013400, 4414600, 4856200] },
+                        { maxKw: Infinity, rates: [3448800, 3793600, 4173000, 4590400, 5049400] }
+                    ],
+                    old: [
+                        { maxKw: 51.48, rates: [3407200, 3748000, 4122800, 4535000, 4988600] },
+                        { maxKw: 117.68, rates: [3407200, 3748000, 4122800, 4535000, 4988600] },
+                        { maxKw: 139.75, rates: [3456000, 3801600, 4181800, 4600000, 5060000] },
+                        { maxKw: 161.81, rates: [3501600, 3851800, 4237000, 4660600, 5126600] },
+                        { maxKw: 183.88, rates: [3552000, 3907200, 4298000, 4727800, 5200400] },
+                        { maxKw: 205.94, rates: [3660000, 4026000, 4428600, 4871400, 5358600] },
+                        { maxKw: 228.00, rates: [3770400, 4147400, 4562200, 5018400, 5520200] },
+                        { maxKw: 250.07, rates: [3873600, 4261000, 4687000, 5155800, 5671400] },
+                        { maxKw: 272.13, rates: [3981600, 4379800, 4817800, 5299600, 5829400] },
+                        { maxKw: 294.20, rates: [4094400, 4503800, 4954200, 5449600, 5994600] },
+                        { maxKw: 316.26, rates: [4209600, 4630600, 5093600, 5603000, 6163200] },
+                        { maxKw: 338.33, rates: [4327200, 4760000, 5236000, 5759600, 6335400] },
+                        { maxKw: 367.75, rates: [4447200, 4892000, 5381200, 5919200, 6511200] },
+                        { maxKw: Infinity, rates: [4572000, 5029200, 5532200, 6085400, 6693800] }
+                    ]
+                },
+                volume3500: {
+                    new: [
+                        { maxKw: 51.48, rates: [2584000, 2842400, 3126800, 3439400, 3783400] },
+                        { maxKw: 117.68, rates: [2584000, 2842400, 3126800, 3439400, 3783400] },
+                        { maxKw: 139.75, rates: [2635200, 2898800, 3188600, 3507400, 3858200] },
+                        { maxKw: 161.81, rates: [2688000, 2956800, 3252400, 3577800, 3935600] },
+                        { maxKw: 183.88, rates: [2743200, 3017600, 3319200, 3651200, 4016400] },
+                        { maxKw: 205.94, rates: [2810400, 3091400, 3400600, 3740600, 4114800] },
+                        { maxKw: 228.00, rates: [2880000, 3168000, 3484800, 3833200, 4216600] },
+                        { maxKw: 250.07, rates: [3038400, 3342200, 3676400, 4044200, 4448600] },
+                        { maxKw: 272.13, rates: [3206400, 3527000, 3879800, 4267800, 4694400] },
+                        { maxKw: 294.20, rates: [3384000, 3722400, 4094600, 4504200, 4954600] },
+                        { maxKw: 316.26, rates: [3568800, 3925600, 4318200, 4750000, 5225000] },
+                        { maxKw: 338.33, rates: [3765600, 4142200, 4556400, 5012000, 5513200] },
+                        { maxKw: 367.75, rates: [3972000, 4369200, 4806200, 5286800, 5815400] },
+                        { maxKw: Infinity, rates: [4190400, 4609400, 5070400, 5577400, 6135200] }
+                    ],
+                    old: [
+                        { maxKw: 51.48, rates: [3956200, 4351800, 4787000, 5265600, 5792200] },
+                        { maxKw: 117.68, rates: [3956200, 4351800, 4787000, 5265600, 5792200] },
+                        { maxKw: 139.75, rates: [4000800, 4400800, 4841000, 5325000, 5857600] },
+                        { maxKw: 161.81, rates: [4044000, 4448400, 4893200, 5382600, 5920800] },
+                        { maxKw: 183.88, rates: [4087200, 4496000, 4945600, 5440000, 5984000] },
+                        { maxKw: 205.94, rates: [4144800, 4559200, 5015200, 5516800, 6068400] },
+                        { maxKw: 228.00, rates: [4248000, 4672800, 5140000, 5654000, 6219400] },
+                        { maxKw: 250.07, rates: [4356000, 4791600, 5270800, 5797800, 6377600] },
+                        { maxKw: 272.13, rates: [4485600, 4934200, 5427600, 5970400, 6567400] },
+                        { maxKw: 294.20, rates: [4620000, 5082000, 5590200, 6149200, 6764200] },
+                        { maxKw: 316.26, rates: [4759200, 5235200, 5758600, 6334400, 6968000] },
+                        { maxKw: 338.33, rates: [4900800, 5390800, 5930000, 6523000, 7175200] },
+                        { maxKw: 367.75, rates: [5049600, 5554600, 6110000, 6721000, 7393200] },
+                        { maxKw: Infinity, rates: [5200800, 5720800, 6293000, 6922200, 7614400] }
+                    ]
+                },
+                volumeOver3500: {
+                    new: [
+                        { maxKw: 51.48, rates: [3290600, 3619800, 3981600, 4379800, 4817800] },
+                        { maxKw: 117.68, rates: [3290600, 3619800, 3981600, 4379800, 4817800] },
+                        { maxKw: 139.75, rates: [3345600, 3680200, 4048200, 4453000, 4898200] },
+                        { maxKw: 161.81, rates: [3403200, 3743600, 4117800, 4529600, 4982600] },
+                        { maxKw: 183.88, rates: [3460800, 3806800, 4187600, 4606400, 5067000] },
+                        { maxKw: 205.94, rates: [3530400, 3883400, 4271800, 4699000, 5168800] },
+                        { maxKw: 228.00, rates: [3600000, 3960000, 4356000, 4791600, 5270800] },
+                        { maxKw: 250.07, rates: [3727200, 4100000, 4510000, 4961000, 5457000] },
+                        { maxKw: 272.13, rates: [3857600, 4243200, 4667600, 5134400, 5647800] },
+                        { maxKw: 294.20, rates: [3993600, 4393000, 4832200, 5315400, 5847000] },
+                        { maxKw: 316.26, rates: [4132800, 4546000, 5000600, 5500800, 6050800] },
+                        { maxKw: 338.33, rates: [4276800, 4704400, 5175000, 5692400, 6261600] },
+                        { maxKw: 367.75, rates: [4425600, 4868200, 5355000, 5890400, 6479600] },
+                        { maxKw: Infinity, rates: [4581600, 5039800, 5543800, 6098200, 6708000] }
+                    ],
+                    old: [
+                        { maxKw: 51.48, rates: [4325800, 4758400, 5234200, 5757600, 6333400] },
+                        { maxKw: 117.68, rates: [4325800, 4758400, 5234200, 5757600, 6333400] },
+                        { maxKw: 139.75, rates: [4389600, 4828600, 5311400, 5842600, 6426800] },
+                        { maxKw: 161.81, rates: [4456800, 4902400, 5392800, 5932000, 6525200] },
+                        { maxKw: 183.88, rates: [4524000, 4976400, 5474000, 6021400, 6623600] },
+                        { maxKw: 205.94, rates: [4627200, 5090000, 5599000, 6158800, 6774600] },
+                        { maxKw: 228.00, rates: [4732800, 5206000, 5726600, 6299400, 6929200] },
+                        { maxKw: 250.07, rates: [4992000, 5491200, 6040400, 6644400, 7308800] },
+                        { maxKw: 272.13, rates: [5268000, 5794800, 6374200, 7011800, 7712800] },
+                        { maxKw: 294.20, rates: [5558400, 6114200, 6725600, 7398200, 8138000] },
+                        { maxKw: 316.26, rates: [5863200, 6449600, 7094400, 7804000, 8584400] },
+                        { maxKw: 338.33, rates: [6187200, 6806000, 7486600, 8235200, 9058600] },
+                        { maxKw: 367.75, rates: [6528000, 7180800, 7898800, 8688800, 9557600] },
+                        { maxKw: Infinity, rates: [6885600, 7574200, 8331600, 9164800, 10081200] }
+                    ]
+                }
+            }
+        };
+
+        const CUSTOMS_RATES = {
+            fiz: {
+                new: [
+                    { threshold: 8500, rate: 0.54, eurPerCc: 2.5 },
+                    { threshold: 16700, rate: 0.48, eurPerCc: 3.5 },
+                    { threshold: 42300, rate: 0.48, eurPerCc: 5.5 },
+                    { threshold: 84500, rate: 0.48, eurPerCc: 7.5 },
+                    { threshold: 169000, rate: 0.48, eurPerCc: 15.0 },
+                    { threshold: Infinity, rate: 0.48, eurPerCc: 20.0 }
+                ],
+                '3-5': [
+                    { threshold: 1000, rate: 1.5 },
+                    { threshold: 1500, rate: 1.7 },
+                    { threshold: 1800, rate: 2.5 },
+                    { threshold: 2300, rate: 2.7 },
+                    { threshold: 3000, rate: 3.0 },
+                    { threshold: Infinity, rate: 3.6 }
+                ],
+                '5+': [
+                    { threshold: 1000, rate: 3.0 },
+                    { threshold: 1500, rate: 3.2 },
+                    { threshold: 1800, rate: 3.5 },
+                    { threshold: 2300, rate: 4.8 },
+                    { threshold: 3000, rate: 5.0 },
+                    { threshold: Infinity, rate: 5.7 }
+                ]
+            },
+            yur: {
+                new: 0.15,
+                '3-5': [
+                    { threshold: 1000, rate: 0.36 },
+                    { threshold: 1500, rate: 0.4 },
+                    { threshold: 1800, rate: 0.36 },
+                    { threshold: 2300, rate: 0.44 },
+                    { threshold: Infinity, rate: 0.44 }
+                ],
+                '5+': [
+                    { threshold: 1000, rate: 1.4 },
+                    { threshold: 1500, rate: 1.5 },
+                    { threshold: 1800, rate: 1.6 },
+                    { threshold: 2300, rate: 2.2 },
+                    { threshold: 3000, rate: 2.2 },
+                    { threshold: Infinity, rate: 3.2 }
+                ]
+            }
+        };
+
+        const EXCISE_RATES = [
+            { max: 90, rate: 0 },
+            { max: 150, rate: 61 },
+            { max: 200, rate: 583 },
+            { max: 300, rate: 955 },
+            { max: 400, rate: 1628 },
+            { max: 500, rate: 1685 },
+            { max: Infinity, rate: 1740 }
+        ];
+
+        const CUSTOMS_FEE = [
+            { max: 200000, fee: 1067 },
+            { max: 450000, fee: 2134 },
+            { max: 1200000, fee: 4269 },
+            { max: 2700000, fee: 11746 },
+            { max: 4200000, fee: 16524 },
+            { max: 5500000, fee: 21344 },
+            { max: 7000000, fee: 27540 },
+            { max: Infinity, fee: 30000 }
+        ];
+
+        const SERVICES = {
+            broker: 70000,
+            contract: 70000
+        };
+
+        // ==================== ЛОГИКА ПРИЛОЖЕНИЯ ====================
+
+        // Показ/скрытие комиссии банка
+        document.getElementById('bankCommission').addEventListener('change', function() {
+            document.getElementById('bankCommissionRow').classList.toggle('show', this.checked);
+            if (this.checked) calculateBankCommission();
+        });
+
+        // Расчёт комиссии при изменении полей
+        ['priceCNY', 'rateCNY', 'bankPercent'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateBankCommission);
+        });
+
+        function calculateBankCommission() {
+            if (!document.getElementById('bankCommission').checked) return;
+            
+            const priceCNY = parseFloat(document.getElementById('priceCNY').value) || 0;
+            const rateCNY = parseFloat(document.getElementById('rateCNY').value) || 0;
+            const bankPercent = parseFloat(document.getElementById('bankPercent').value) || 0;
+            
+            const priceRUB = priceCNY * rateCNY;
+            const bankAmount = priceRUB * (bankPercent / 100);
+            
+            document.getElementById('bankAmount').value = Math.round(bankAmount);
+        }
+
+        // Обновление подсказки для утильсбора
+        ['power', 'volume'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateUtilHint);
+        });
+        document.querySelectorAll('input[name="engineType"]').forEach(el => {
+            el.addEventListener('change', updateUtilHint);
+        });
+        document.querySelectorAll('input[name="entityType"]').forEach(el => {
+            el.addEventListener('change', updateUtilHint);
+        });
+
+        function updateUtilHint() {
+            const entityType = document.querySelector('input[name="entityType"]:checked').value;
+            const engineType = document.querySelector('input[name="engineType"]:checked').value;
+            const power = parseFloat(document.getElementById('power').value) || 0;
+            const volume = parseFloat(document.getElementById('volume').value) || 0;
+            const checkbox = document.getElementById('preferentialUtil');
+            const hint = document.getElementById('utilHint');
+
+            const isElectric = engineType === 'electro';
+            const qualifiesForPreferential = entityType === 'fiz' && (
+                (isElectric && power <= 80) ||
+                (!isElectric && power <= 160 && volume <= 3000)
+            );
+
+            if (entityType === 'yur') {
+                hint.innerHTML = '❌ Для юрлиц льготный утильсбор не применяется';
+                hint.className = 'checkbox-hint invalid';
+                checkbox.checked = false;
+                checkbox.disabled = true;
+            } else if (qualifiesForPreferential) {
+                hint.innerHTML = '✅ Авто соответствует критериям льготного утильсбора';
+                hint.className = 'checkbox-hint valid';
+                checkbox.disabled = false;
+            } else {
+                hint.innerHTML = '⚠️ Авто НЕ соответствует критериям (электро > 80 л.с. или ДВС > 160 л.с. или > 3000 см³)';
+                hint.className = 'checkbox-hint invalid';
+                checkbox.checked = false;
+                checkbox.disabled = true;
+            }
+        }
+
+        // Обработка формы
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateUtilHint();
+            calculate();
+        });
+
+        function calculate() {
+            // Показываем загрузку
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+
+            setTimeout(() => {
+                const entityType = document.querySelector('input[name="entityType"]:checked').value;
+                const engineType = document.querySelector('input[name="engineType"]:checked').value;
+                const importYear = parseInt(document.querySelector('input[name="importYear"]:checked').value);
+                const priceCNY = parseFloat(document.getElementById('priceCNY').value);
+                const rateCNY = parseFloat(document.getElementById('rateCNY').value);
+                const rateEUR = parseFloat(document.getElementById('rateEUR').value);
+                const age = document.getElementById('age').value;
+                const volume = parseFloat(document.getElementById('volume').value);
+                const power = parseFloat(document.getElementById('power').value);
+                const includeBank = document.getElementById('bankCommission').checked;
+                const bankAmount = parseFloat(document.getElementById('bankAmount').value) || 0;
+                const preferentialUtil = document.getElementById('preferentialUtil').checked;
+
+                const priceRUB = priceCNY * rateCNY;
+                const priceEUR = priceCNY * rateCNY / rateEUR;
+                
+                let customsDuty = calculateCustomsDuty(entityType, engineType, age, volume, priceEUR, priceRUB, rateEUR);
+                const utilFee = calculateUtilizationFee(engineType, entityType, importYear, age, volume, power, preferentialUtil);
+                const excise = calculateExcise(power, entityType, engineType);
+                const vat = calculateVAT(priceRUB, customsDuty, excise, entityType, engineType);
+                const customsFee = calculateCustomsFee(priceRUB);
+                
+                const totalCustoms = customsDuty + utilFee + excise + vat + customsFee;
+                const services = SERVICES.broker + SERVICES.contract;
+                const total = priceRUB + (includeBank ? bankAmount : 0) + totalCustoms + services;
+
+                displayResult({
+                    priceRUB, priceEUR, customsDuty, utilFee, excise, vat, 
+                    customsFee, totalCustoms, services, total, bankAmount, includeBank, preferentialUtil,
+                    entityType, engineType, age, volume, power, importYear
+                });
+
+                document.getElementById('loading').classList.remove('show');
+            }, 300);
+        }
+
+        function calculateCustomsDuty(entityType, engineType, age, volume, priceEUR, priceRUB, rateEUR) {
+            if (engineType === 'electro') return priceRUB * 0.15;
+
+            if (entityType === 'fiz') {
+                if (age === 'new') {
+                    const rates = CUSTOMS_RATES.fiz.new;
+                    for (let rate of rates) {
+                        if (priceEUR <= rate.threshold) {
+                            const percentDuty = priceRUB * rate.rate;
+                            const ccDuty = volume * rate.eurPerCc * rateEUR;
+                            return Math.max(percentDuty, ccDuty);
+                        }
+                    }
+                } else {
+                    const rates = CUSTOMS_RATES.fiz[age];
+                    for (let rate of rates) {
+                        if (volume <= rate.threshold) {
+                            return volume * rate.rate * rateEUR;
+                        }
+                    }
+                }
+            } else {
+                if (age === 'new') {
+                    return priceRUB * CUSTOMS_RATES.yur.new;
+                } else {
+                    const rates = CUSTOMS_RATES.yur[age];
+                    for (let rate of rates) {
+                        if (volume <= rate.threshold) {
+                            return Math.max(priceRUB * 0.20, volume * rate.rate * rateEUR);
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+
+        function calculateUtilizationFee(engineType, entityType, year, age, volume, power, preferentialUtil) {
+            const isElectric = engineType === 'electro';
+            const isNew = age === 'new';
+            const yearIndex = Math.min(Math.max(parseInt(year) - 2026, 0), 4);
+            
+            // Льготный утильсбор
+            if (preferentialUtil && entityType === 'fiz') {
+                if (isElectric && power <= 80) {
+                    return isNew ? 3400 : 5200;
+                }
+                if (!isElectric && power <= 160 && volume <= 3000) {
+                    return isNew ? 3400 : 5200;
+                }
+            }
+
+            // Полный утильсбор из Excel
+            const ageType = isNew ? 'new' : 'old';
+            let rates;
+            
+            if (isElectric) {
+                rates = UTILIZATION_DATA.electro[ageType];
+            } else {
+                let volumeCategory;
+                if (volume <= 1000) volumeCategory = 'volume1000';
+                else if (volume <= 2000) volumeCategory = 'volume2000';
+                else if (volume <= 3000) volumeCategory = 'volume3000';
+                else if (volume <= 3500) volumeCategory = 'volume3500';
+                else volumeCategory = 'volumeOver3500';
+                
+                rates = UTILIZATION_DATA.ice[volumeCategory][ageType];
+            }
+
+            const powerKw = power / 1.36;
+            
+            for (let tier of rates) {
+                if (powerKw <= tier.maxKw) {
+                    return tier.rates[yearIndex];
+                }
+            }
+            
+            return rates[rates.length - 1].rates[yearIndex];
+        }
+
+        function calculateExcise(power, entityType, engineType) {
+            if (entityType !== 'yur' && engineType !== 'electro') return 0;
+            
+            for (let tier of EXCISE_RATES) {
+                if (power <= tier.max) {
+                    return power * tier.rate;
+                }
+            }
+            return 0;
+        }
+
+        function calculateVAT(priceRUB, customsDuty, excise, entityType, engineType) {
+            if (entityType !== 'yur' && engineType !== 'electro') return 0;
+            return (priceRUB + customsDuty + excise) * 0.20;
+        }
+
+        function calculateCustomsFee(value) {
+            for (let tier of CUSTOMS_FEE) {
+                if (value <= tier.max) {
+                    return tier.fee;
+                }
+            }
+            return 30000;
+        }
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById('result');
+            const contentDiv = document.getElementById('resultContent');
+            
+            const formatMoney = (amount) => {
+                return new Intl.NumberFormat('ru-RU').format(Math.round(amount)) + ' ₽';
+            };
+
+            contentDiv.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">💵 Стоимость авто (CNY)</span>
+                    <span class="result-value">${formatMoney(data.priceRUB)}</span>
+                </div>
+                ${data.includeBank ? `
+                <div class="result-item">
+                    <span class="result-label">🏦 Комиссия банка</span>
+                    <span class="result-value">${formatMoney(data.bankAmount)}</span>
+                </div>` : ''}
+                <div class="result-item">
+                    <span class="result-label">💶 Стоимость авто (EUR)</span>
+                    <span class="result-value">${new Intl.NumberFormat('ru-RU').format(Math.round(data.priceEUR))} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">🛃 Таможенная пошлина</span>
+                    <span class="result-value">${formatMoney(data.customsDuty)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">♻️ Утильсбор ${data.preferentialUtil ? '(льготный)' : '(полный)'}</span>
+                    <span class="result-value">${formatMoney(data.utilFee)}</span>
+                </div>
+                ${data.excise > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">🏭 Акциз</span>
+                    <span class="result-value">${formatMoney(data.excise)}</span>
+                </div>` : ''}
+                ${data.vat > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">📦 НДС (20%)</span>
+                    <span class="result-value">${formatMoney(data.vat)}</span>
+                </div>` : ''}
+                <div class="result-item">
+                    <span class="result-label">📋 Таможенный сбор</span>
+                    <span class="result-value">${formatMoney(data.customsFee)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">💼 Услуги (брокер + договор)</span>
+                    <span class="result-value">${formatMoney(data.services)}</span>
+                </div>
+                <div class="result-total">
+                    <div class="label">🔥 ИТОГОВАЯ СТОИМОСТЬ</div>
+                    <div class="value">${formatMoney(data.total)}</div>
+                </div>
+            `;
+            
+            resultDiv.classList.add('show');
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Инициализация
+        updateUtilHint();
+    </script>
+</body>
+</html>
