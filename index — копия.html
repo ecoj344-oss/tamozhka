@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MAX Customs 2026 · Калькулятор растаможки</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg:#020617;
+      --card-bg:#020818;
+      --card-border:rgba(148,163,184,.28);
+      --accent:#4f46e5;
+      --accent-soft:#6366f1;
+      --accent-muted:#a5b4fc;
+      --text-main:#e5e7eb;
+      --text-muted:#9ca3af;
+      --radius-lg:18px;
+      --radius-md:14px;
+      --radius-sm:11px;
+      --shadow:0 18px 45px rgba(15,23,42,.9);
+      --fast:160ms ease-out;
+      --med:220ms cubic-bezier(.4,0,.2,1);
+    }
+
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:radial-gradient(circle at top,#020617 0,#020617 55%,#000 100%);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px 12px;
+    }
+
+    .app{
+      width:100%;
+      max-width:440px;
+    }
+
+    .app-title{
+      text-align:center;
+      margin-bottom:14px;
+      font-size:15px;
+      color:var(--text-muted);
+    }
+
+    .app-title strong{
+      color:var(--accent-muted);
+      font-weight:600;
+    }
+
+    .card{
+      background:radial-gradient(circle at top left,#020617 0,#020617 55%);
+      border-radius:var(--radius-lg);
+      border:1px solid var(--card-border);
+      box-shadow:var(--shadow);
+      padding:18px 16px 16px;
+    }
+
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+      gap:10px;
+    }
+
+    .card-header-main{
+      font-size:16px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .card-header-sub{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    .card-chip{
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.45);
+      font-size:11px;
+      color:var(--text-muted);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+
+    .chip-dot{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:radial-gradient(circle at 30% 20%,#22c55e,#166534);
+      box-shadow:0 0 0 2px rgba(34,197,94,.25);
+    }
+
+    .form-group{ margin-bottom:14px; }
+
+    .form-label{
+      display:block;
+      margin-bottom:8px;
+      font-size:11px;
+      font-weight:600;
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .radio-group{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .radio-group.three-cols{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .radio-group.five-cols{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+
+    @media(min-width:430px){
+      .radio-group.three-cols{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .radio-group.five-cols{ grid-template-columns:repeat(5,minmax(0,1fr)); }
+    }
+
+    .radio-label{
+      position:relative;
+      padding:8px 6px;
+      background:rgba(15,23,42,.96);
+      border-radius:999px;
+      border:1px solid rgba(31,41,55,.9);
+      cursor:pointer;
+      font-size:13px;
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      overflow:hidden;
+      transition:border-color var(--med),background var(--med),
+               color var(--fast),transform var(--fast),box-shadow var(--med);
+    }
+
+    .radio-label::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at top left,var(--accent),var(--accent-soft));
+      opacity:0;
+      transition:opacity var(--med);
+    }
+
+    .radio-label span{ position:relative; z-index:1; }
+    .radio-label input{ display:none; }
+
+    .radio-label:hover{
+      border-color:rgba(129,140,248,.8);
+      color:#e5e7eb;
+      transform:translateY(-.5px);
+      box-shadow:0 10px 24px rgba(15,23,42,.9);
+    }
+
+    .radio-label:has(input:checked){
+      border-color:transparent;
+      box-shadow:0 12px 30px rgba(55,65,194,.7);
+    }
+
+    .radio-label:has(input:checked)::before{ opacity:1; }
+    .radio-label input:checked + span{ color:#f9fafb; }
+
+    .input-row{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    @media(max-width:430px){
+      .input-row{ grid-template-columns:minmax(0,1fr); }
+    }
+
+    .input-field{
+      width:100%;
+      padding:10px 11px;
+      border-radius:var(--radius-sm);
+      border:1px solid rgba(31,41,55,.9);
+      background:rgba(15,23,42,.98);
+      color:#f9fafb;
+      font-size:13px;
+      font-weight:500;
+      transition:border-color var(--med),background var(--med),
+               box-shadow var(--med),transform var(--fast);
+    }
+
+    .input-field::placeholder{
+      color:rgba(75,85,99,.9);
+      font-weight:400;
+    }
+
+    .input-field:focus{
+      outline:none;
+      border-color:rgba(129,140,248,.9);
+      background:rgba(15,23,42,1);
+      box-shadow:0 0 0 1px rgba(129,140,248,.7);
+      transform:translateY(-.5px);
+    }
+
+    select.input-field{
+      cursor:pointer;
+      appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23818cf8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 10px center;
+      padding-right:26px;
+    }
+
+    .btn-calculate{
+      width:100%;
+      padding:12px;
+      border-radius:999px;
+      border:none;
+      background:radial-gradient(circle at top left,#6366f1,#4f46e5);
+      color:#f9fafb;
+      font-size:14px;
+      font-weight:650;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      margin-top:8px;
+      box-shadow:0 18px 40px rgba(15,23,42,.95);
+      transition:transform var(--med),box-shadow var(--med),filter var(--med);
+    }
+
+    .btn-calculate:hover{
+      transform:translateY(-1px);
+      box-shadow:0 22px 52px rgba(15,23,42,.98);
+      filter:brightness(1.06);
+    }
+
+    .btn-calculate:active{
+      transform:translateY(0);
+      box-shadow:0 14px 30px rgba(15,23,42,.95);
+      filter:brightness(.98);
+    }
+
+    .warning{
+      margin-top:10px;
+      padding:10px 11px;
+      border-radius:var(--radius-md);
+      border:1px solid rgba(148,163,184,.28);
+      background:rgba(15,23,42,.96);
+      font-size:11px;
+      color:var(--text-muted);
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .warning strong{ color:#fbbf24; }
+
+    .result{
+      margin-top:14px;
+      padding:14px 12px 12px;
+      border-radius:var(--radius-md);
+      border:1px solid rgba(31,41,55,.95);
+      background:rgba(15,23,42,.98);
+      box-shadow:0 16px 40px rgba(15,23,42,.9);
+      display:none;
+    }
+    .result.show{ display:block; }
+
+    .result-title{
+      font-size:13px;
+      font-weight:600;
+      text-align:center;
+      margin-bottom:10px;
+      color:#d1d5db;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .result-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:7px 0;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      font-size:12px;
+    }
+    .result-item:last-of-type{ border-bottom:none; }
+
+    .result-label{ color:var(--text-muted); margin-right:6px; }
+    .result-value{ color:var(--text-main); font-weight:600; white-space:nowrap; }
+
+    .result-total{
+      margin-top:10px;
+      padding:12px 10px;
+      border-radius:var(--radius-md);
+      background:radial-gradient(circle at top left,var(--accent),var(--accent-soft));
+      text-align:center;
+      box-shadow:0 14px 36px rgba(15,23,42,.9);
+    }
+    .result-total .label{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:rgba(249,250,251,.9);
+      margin-bottom:4px;
+    }
+    .result-total .value{
+      font-size:20px;
+      font-weight:800;
+      color:#f9fafb;
+    }
+
+    .contact{
+      margin-top:12px;
+      width:100%;
+      padding:12px;
+      border-radius:999px;
+      text-decoration:none;
+      border:1px solid rgba(22,163,74,.7);
+      background:linear-gradient(135deg,#065f46,#059669);
+      color:#ecfdf5;
+      font-size:13px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      box-shadow:0 16px 36px rgba(6,95,70,.75);
+      transition:transform var(--med),box-shadow var(--med),filter var(--med);
+    }
+    .contact:hover{
+      transform:translateY(-1px);
+      box-shadow:0 20px 48px rgba(6,95,70,.9);
+      filter:brightness(1.03);
+    }
+    .contact:active{
+      transform:translateY(0);
+      box-shadow:0 14px 30px rgba(6,95,70,.85);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-title">
+      <strong>MAX Customs · 2026</strong> · мини‑калькулятор растаможки
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-header-main">💰 Мини‑калькулятор</div>
+          <div class="card-header-sub">
+            Введите параметры авто и получите ориентировочную сумму растаможки.
+          </div>
+        </div>
+        <div class="card-chip"><span class="chip-dot"></span>Ставки 2026</div>
+      </div>
+
+      <form id="calculatorForm">
+        <div class="form-group">
+          <label class="form-label">👤 Тип лица</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="entityType" value="fiz" checked />
+              <span>👤 Физ лицо</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="entityType" value="yur" />
+              <span>🏢 Юр лицо</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">⚙️ Тип двигателя</label>
+          <div class="radio-group three-cols">
+            <label class="radio-label">
+              <input type="radio" name="engineType" value="ice" checked />
+              <span>⛽ ДВС</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="engineType" value="electro" />
+              <span>⚡ Электро</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">📅 Год ввоза</label>
+          <div class="radio-group five-cols">
+            <label class="radio-label">
+              <input type="radio" name="importYear" value="2026" checked />
+              <span>2026</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="importYear" value="2027" />
+              <span>2027</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="importYear" value="2028" />
+              <span>2028</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="importYear" value="2029" />
+              <span>2029</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="importYear" value="2030" />
+              <span>2030</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">💵 Стоимость, CNY</label>
+            <input type="number" id="priceCNY" class="input-field"
+                   placeholder="100000" min="1" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">💱 Курс CNY→RUB</label>
+            <input type="number" id="rateCNY" class="input-field"
+                   value="11.09" step="0.01" min="0.01" required />
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">🎂 Возраст авто, лет</label>
+            <select id="age" class="input-field" required>
+              <option value="new">🆕 Менее 3 лет</option>
+              <option value="3-5">⏱️ 3-5 лет</option>
+              <option value="5+">⏳ Более 5 лет</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">💶 Курс EUR→RUB</label>
+            <input type="number" id="rateEUR" class="input-field"
+                   value="90.28" step="0.01" min="0.01" required />
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">🔧 Объём, см³</label>
+            <input type="number" id="volume" class="input-field"
+                   placeholder="2000" min="500" max="6000" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">⚡ Мощность, л.с.</label>
+            <input type="number" id="power" class="input-field"
+                   placeholder="150" min="30" max="1000" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-calculate">
+          🧮 Рассчитать стоимость
+        </button>
+      </form>
+
+      <div class="warning">
+        <span>⚠️</span>
+        <span>
+          <strong>Расчёт ориентировочный</strong> по ставкам 2026 года
+          (ФТС РФ, утильсбор, НДС, акциз). Итог зависит от курса валют и
+          документов по авто.
+        </span>
+      </div>
+
+      <div id="result" class="result">
+        <div class="result-title">📊 Результат расчёта</div>
+        <div id="resultContent"></div>
+      </div>
+
+      <a href="https://t.me/Nulluss125" class="contact" target="_blank">
+        📞 Связаться с менеджером
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const CUSTOMS_RATES = {
+      fiz: {
+        new: [
+          { threshold: 8500, rate: 0.54, eurPerCc: 2.5 },
+          { threshold: 16700, rate: 0.48, eurPerCc: 3.5 },
+          { threshold: 42300, rate: 0.48, eurPerCc: 5.5 },
+          { threshold: 84500, rate: 0.48, eurPerCc: 7.5 },
+          { threshold: 169000, rate: 0.48, eurPerCc: 15.0 },
+          { threshold: Infinity, rate: 0.48, eurPerCc: 20.0 }
+        ],
+        '3-5': [
+          { threshold: 1000, rate: 1.5 },
+          { threshold: 1500, rate: 1.7 },
+          { threshold: 1800, rate: 2.5 },
+          { threshold: 2300, rate: 2.7 },
+          { threshold: 3000, rate: 3.0 },
+          { threshold: Infinity, rate: 3.6 }
+        ],
+        '5+': [
+          { threshold: 1000, rate: 3.0 },
+          { threshold: 1500, rate: 3.2 },
+          { threshold: 1800, rate: 3.5 },
+          { threshold: 2300, rate: 4.8 },
+          { threshold: 3000, rate: 5.0 },
+          { threshold: Infinity, rate: 5.7 }
+        ]
+      },
+      yur: {
+        new: 0.15,
+        '3-5': [
+          { threshold: 1000, rate: 0.36 },
+          { threshold: 1500, rate: 0.4 },
+          { threshold: 1800, rate: 0.36 },
+          { threshold: 2300, rate: 0.44 },
+          { threshold: Infinity, rate: 0.44 }
+        ],
+        '5+': [
+          { threshold: 1000, rate: 1.4 },
+          { threshold: 1500, rate: 1.5 },
+          { threshold: 1800, rate: 1.6 },
+          { threshold: 2300, rate: 2.2 },
+          { threshold: 3000, rate: 2.2 },
+          { threshold: Infinity, rate: 3.2 }
+        ]
+      }
+    };
+
+    const UTILIZATION_FEE = {
+      2026: { fiz: { new: 3400, old: 5200 }, yur: { new: 5200, old: 7800 } },
+      2027: { fiz: { new: 3600, old: 5500 }, yur: { new: 5500, old: 8200 } },
+      2028: { fiz: { new: 3800, old: 5800 }, yur: { new: 5800, old: 8600 } },
+      2029: { fiz: { new: 4000, old: 6100 }, yur: { new: 6100, old: 9000 } },
+      2030: { fiz: { new: 4200, old: 6400 }, yur: { new: 6400, old: 9400 } }
+    };
+
+    const EXCISE_RATES = [
+      { max: 90, rate: 0 },
+      { max: 150, rate: 61 },
+      { max: 200, rate: 583 },
+      { max: 300, rate: 955 },
+      { max: 400, rate: 1628 },
+      { max: 500, rate: 1685 },
+      { max: Infinity, rate: 1740 }
+    ];
+
+    const CUSTOMS_FEE = [
+      { max: 200000, fee: 1067 },
+      { max: 450000, fee: 2134 },
+      { max: 1200000, fee: 4269 },
+      { max: 2700000, fee: 11746 },
+      { max: 4200000, fee: 16524 },
+      { max: 5500000, fee: 21344 },
+      { max: 7000000, fee: 27540 },
+      { max: Infinity, fee: 30000 }
+    ];
+
+    document.getElementById('calculatorForm')
+      .addEventListener('submit', function (e) {
+        e.preventDefault();
+        calculate();
+      });
+
+    function calculate() {
+      const entityType =
+        document.querySelector('input[name="entityType"]:checked').value;
+      const engineType =
+        document.querySelector('input[name="engineType"]:checked').value;
+      const importYear = parseInt(
+        document.querySelector('input[name="importYear"]:checked').value
+      );
+      const priceCNY = parseFloat(document.getElementById('priceCNY').value);
+      const rateCNY = parseFloat(document.getElementById('rateCNY').value);
+      const rateEUR = parseFloat(document.getElementById('rateEUR').value);
+      const age = document.getElementById('age').value;
+      const volume = parseFloat(document.getElementById('volume').value);
+      const power = parseFloat(document.getElementById('power').value);
+
+      const priceRUB = priceCNY * rateCNY;
+      const priceEUR = (priceCNY * rateCNY) / rateEUR;
+
+      let customsDuty = calculateCustomsDuty(
+        entityType,
+        engineType,
+        age,
+        volume,
+        priceEUR,
+        priceRUB,
+        rateEUR
+      );
+      const utilFee = calculateUtilizationFee(
+        engineType,
+        entityType,
+        importYear,
+        age,
+        volume,
+        power
+      );
+      const excise = calculateExcise(power, entityType, engineType);
+      const vat = calculateVAT(priceRUB, customsDuty, excise, entityType, engineType);
+      const customsFee = calculateCustomsFee(priceRUB);
+
+      const totalCustoms = customsDuty + utilFee + excise + vat + customsFee;
+      const services = 70000 + 70000;
+      const total = priceRUB + totalCustoms + services;
+
+      displayResult({
+        priceRUB,
+        priceEUR,
+        customsDuty,
+        utilFee,
+        excise,
+        vat,
+        customsFee,
+        totalCustoms,
+        services,
+        total
+      });
+    }
+
+    function calculateCustomsDuty(
+      entityType,
+      engineType,
+      age,
+      volume,
+      priceEUR,
+      priceRUB,
+      rateEUR
+    ) {
+      if (engineType === 'electro') return priceRUB * 0.15;
+
+      if (entityType === 'fiz') {
+        if (age === 'new') {
+          const rates = CUSTOMS_RATES.fiz.new;
+          for (let rate of rates) {
+            if (priceEUR <= rate.threshold) {
+              const percentDuty = priceRUB * rate.rate;
+              const ccDuty = volume * rate.eurPerCc * rateEUR;
+              return Math.max(percentDuty, ccDuty);
+            }
+          }
+        } else {
+          const rates = CUSTOMS_RATES.fiz[age];
+          for (let rate of rates) {
+            if (volume <= rate.threshold) {
+              return volume * rate.rate * rateEUR;
+            }
+          }
+        }
+      } else {
+        if (age === 'new') {
+          return priceRUB * CUSTOMS_RATES.yur.new;
+        } else {
+          const rates = CUSTOMS_RATES.yur[age];
+          for (let rate of rates) {
+            if (volume <= rate.threshold) {
+              return Math.max(priceRUB * 0.2, volume * rate.rate * rateEUR);
+            }
+          }
+        }
+      }
+      return 0;
+    }
+
+    function calculateUtilizationFee(engineType, entityType, year, age, volume, power) {
+      if (entityType === 'fiz') {
+        if (engineType === 'electro' && power <= 80) {
+          return UTILIZATION_FEE[year].fiz.new;
+        }
+        if (engineType !== 'electro' && power <= 160 && volume <= 3000) {
+          return UTILIZATION_FEE[year].fiz.new;
+        }
+      }
+
+      const isElectric = engineType === 'electro';
+      const isNew = age === 'new';
+      const yearData = UTILIZATION_FEE[year];
+      if (!yearData) return 0;
+
+      if (isElectric) {
+        if (power <= 80) return isNew ? 3400 : 5200;
+        if (power <= 100) return isNew ? 800800 : 1408800;
+        if (power <= 130) return isNew ? 1317600 : 1912800;
+        if (power <= 160) return isNew ? 1560000 : 2227200;
+        return isNew ? 3648000 : 4780800;
+      } else {
+        if (volume <= 1000) return isNew ? 297600 : 552000;
+        if (volume <= 2000) return isNew ? 800800 : 1408800;
+        if (volume <= 3000) return isNew ? 2250400 : 3407200;
+        return isNew ? 2584000 : 3956200;
+      }
+    }
+
+    function calculateExcise(power, entityType, engineType) {
+      if (entityType !== 'yur' && engineType !== 'electro') return 0;
+      for (let tier of EXCISE_RATES) {
+        if (power <= tier.max) {
+          return power * tier.rate;
+        }
+      }
+      return 0;
+    }
+
+    function calculateVAT(priceRUB, customsDuty, excise, entityType, engineType) {
+      if (entityType !== 'yur' && engineType !== 'electro') return 0;
+      return (priceRUB + customsDuty + excise) * 0.2;
+    }
+
+    function calculateCustomsFee(value) {
+      for (let tier of CUSTOMS_FEE) {
+        if (value <= tier.max) return tier.fee;
+      }
+      return 30000;
+    }
+
+    function displayResult(data) {
+      const resultDiv = document.getElementById('result');
+      const contentDiv = document.getElementById('resultContent');
+      const formatMoney = a =>
+        new Intl.NumberFormat('ru-RU').format(Math.round(a)) + ' ₽';
+
+      contentDiv.innerHTML = `
+        <div class="result-item">
+          <span class="result-label">💵 Стоимость авто (CNY)</span>
+          <span class="result-value">${formatMoney(data.priceRUB)}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">💶 Стоимость авто (EUR)</span>
+          <span class="result-value">${new Intl.NumberFormat('ru-RU').format(Math.round(data.priceEUR))} €</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">🛃 Таможенная пошлина</span>
+          <span class="result-value">${formatMoney(data.customsDuty)}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">♻️ Утильсбор</span>
+          <span class="result-value">${formatMoney(data.utilFee)}</span>
+        </div>
+        ${data.excise > 0 ? `
+        <div class="result-item">
+          <span class="result-label">🏭 Акциз</span>
+          <span class="result-value">${formatMoney(data.excise)}</span>
+        </div>` : ''}
+        ${data.vat > 0 ? `
+        <div class="result-item">
+          <span class="result-label">📦 НДС (20%)</span>
+          <span class="result-value">${formatMoney(data.vat)}</span>
+        </div>` : ''}
+        <div class="result-item">
+          <span class="result-label">📋 Таможенный сбор</span>
+          <span class="result-value">${formatMoney(data.customsFee)}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">💼 Услуги (брокер + договор)</span>
+          <span class="result-value">${formatMoney(data.services)}</span>
+        </div>
+        <div class="result-total">
+          <div class="label">ИТОГОВАЯ СТОИМОСТЬ</div>
+          <div class="value">${formatMoney(data.total)}</div>
+        </div>
+      `;
+      resultDiv.classList.add('show');
+    }
+  </script>
+</body>
+</html>
